@@ -1,0 +1,18 @@
+{
+  "manifest_version": 2,
+
+  "name": "Adyen Test Cards",
+  "description": "Shows test cards accepted by Adyen payment system",
+  "version": "1.0.0",
+
+  "browser_action": {
+    "default_icon": "adyen_logo.png",
+    "default_popup": "cards_list.html",
+    "default_title": "Adyen Test Cards"
+  },
+  "permissions": [
+    "activeTab",
+    "storage"
+  ],
+  "content_security_policy": "script-src 'self' https://ajax.googleapis.com; object-src 'self'"
+}
