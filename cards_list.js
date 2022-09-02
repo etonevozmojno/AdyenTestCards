@@ -127,17 +127,6 @@ $(document).ready(function () {
         $('#maestro-3ds2 > tbody > tr:nth-child(' + i + ') > td:nth-child(2)').append(element);
     }
 
-    for (let i = 0; i < adyen_sepa_rows_count + 1; i++) {
-        $('#adyen-sepa > tbody > tr:nth-child(' + i + ') > td:nth-child(1)').addClass("adyen-sepa-name" + i)
-        $('#adyen-sepa > tbody > tr:nth-child(' + i + ') > td:nth-child(3)').addClass("adyen-sepa-iban" + i)
-        var element = $('<input type="button" id="adyen-sepa-name' + i + '" value="&#xf0c5" class="copy-button"/>').on('click', function () {
-            copyToClipboard("adyen-sepa-name" + i)
-        });
-        var element1 = $('<input type="button" id="adyen-sepa-iban' + i + '" value="&#xf0c5" class="copy-button"/>').on('click', function () {
-            copyToClipboard("adyen-sepa-iban" + i)
-        });
-        $('#adyen-sepa > tbody > tr:nth-child(' + i + ') > td:nth-child(2)').append(element);
-        $('#adyen-sepa > tbody > tr:nth-child(' + i + ') > td:nth-child(4)').append(element1);
-    }
-});
+})
+;
 
