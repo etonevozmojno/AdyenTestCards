@@ -1,144 +1,156 @@
-function copyToClipboard(elementClassName) {
-
-    // Create a "hidden" input
-    var aux = document.createElement("input");
-
-    // Assign it the value of the specified element
-    aux.setAttribute("value", document.getElementsByClassName(elementClassName)[0].innerHTML);
-
-    // Append it to the body
-    document.body.appendChild(aux);
-
-    // Highlight its content
-    aux.select();
-
-    // Copy the highlighted text
-    document.execCommand("copy");
-
-    // Remove it from the body
-    document.body.removeChild(aux);
-
-}
-
 $(document).ready(function () {
+    $.getJSON('cards_list.json')
+        .done(function (data) {
+            if (Array.isArray(data) && data.length > 0) {
+                data.forEach(function (cardGroup) {
+                    var table = '<table class="section-table" data-type="' + cardGroup.type + '">';
+                    table += '<h2>' + cardGroup.type + '</h2>';
+                    table += '<tr class="header"><th>Card Number</th><th>Expiry Date</th><th>Security Code</th><th>Country</th><th>Action</th></tr>';
 
-    //Get cards count for each type
-    let visa_rows_count = $('#visa > tbody > tr').length;
-    let visa_3ds1_rows_count = $('#visa-3ds1 > tbody > tr').length;
-    let visa_3ds2_rows_count = $('#visa-3ds2 > tbody > tr').length;
-    let mastercard_rows_count = $('#mastercard > tbody > tr').length;
-    let mastercard_3ds1_rows_count = $('#mastercard-3ds1 > tbody > tr').length;
-    let amex_rows_count = $('#amex > tbody > tr').length;
-    let amex_3ds1_rows_count = $('#amex-3ds1 > tbody > tr').length;
-    let amex_3ds2_rows_count = $('#amex-3ds2 > tbody > tr').length;
-    let maestro_rows_count = $('#maestro > tbody > tr').length;
-    let maestro_3ds1_rows_count = $('#maestro-3ds1 > tbody > tr').length;
-    let maestro_3ds2_rows_count = $('#maestro-3ds2 > tbody > tr').length;
-    let adyen_sepa_rows_count = $('#adyen-sepa > tbody > tr').length;
+                    cardGroup.cards.forEach(function (card) {
+                        table += '<tr>';
+                        table += '<td class="card-number">' + card.card_number + '</td>';
+                        table += '<td class="expiry-date">' + card.expiry_date + '</td>';
+                        table += '<td class="security-code">' + card.security_code + '</td>';
+                        table += '<td class="country">' + card.country + '</td>';
+                        table += '<td class="action"><button class="fill-card-button">Fill</button><button class="copy-button">Copy</button></td>';
+                        table += '</tr>';
+                    });
 
-    //Loop through all card numbers
-    for (let i = 0; i < visa_rows_count + 1; i++) {
-        //Add class for each card cell to be able to copy
-        $('#visa > tbody > tr:nth-child(' + i + ') > td:nth-child(1)').addClass("visa-card-" + i)
-        //Creating a button for copying and binding the click event - Chrome doesn't allow inline scripts
-        var element = $('<input type="button" id="visa-copy-' + i + '" value="&#xf0c5" class="copy-button"/>').on('click', function () {
-            copyToClipboard("visa-card-" + i)
+                    table += '</table>';
+                    $('#cardTables').append(table);
+                });
+
+                $('#cardTables').on('click', '.fill-card-button', function (evt) {
+                    evt.preventDefault();
+                    var $row = $(this).closest('tr');
+                    var cardNumber = $row.find('td.card-number').text();
+                    var expiryDate = $row.find('td.expiry-date').text();
+                    var securityCode = $row.find('td.security-code').text();
+
+                    chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
+                        var activeTab = tabs[0];
+
+                        chrome.scripting.executeScript({
+                            target: {tabId: activeTab.id, allFrames: true},
+                            func: prefillCardComponent,
+                            args: [cardNumber, expiryDate, securityCode]
+                        });
+                    });
+                });
+
+                $('#cardTables').on('click', '.copy-button', function (evt) {
+                    evt.preventDefault();
+                    var $row = $(this).closest('tr');
+                    var cardNumber = $row.find('td.card-number').text();
+                    copyToClipboard(cardNumber);
+                });
+            } else {
+                console.error('No data found or data is not in the expected format.');
+            }
+        })
+        .fail(function (jqXHR, textStatus, errorThrown) {
+            console.error('Failed to load JSON file:', textStatus, errorThrown);
         });
-        //Appending the created button to the separate cell
-        $('#visa > tbody > tr:nth-child(' + i + ') > td:nth-child(2)').append(element);
+
+    $.getJSON('sepa_list.json')
+        .done(function (data) {
+            if (Array.isArray(data) && data.length > 0) {
+                var table = '<table class="section-table">';
+                table += '<h2>Sepa Data</h2>';
+                table += '<tr class="header"><th>Name</th><th>IBAN</th><th>Country</th><th>Action</th></tr>';
+
+                data.forEach(function (sepa) {
+                    table += '<tr>';
+                    table += '<td class="name">' + sepa.account_name + '</td>';
+                    table += '<td class="iban">' + sepa.iban + '</td>';
+                    table += '<td class="sepa-country">' + sepa.country + '</td>';
+                    table += '<td><button class="fill-sepa-button">Fill</button><button class="copy-button">Copy</button></td>';
+                    table += '</tr>';
+                });
+
+                table += '</table>';
+                $('#sepaTables').append(table);
+
+                $('#sepaTables').on('click', '.fill-sepa-button', function (evt) {
+                    evt.preventDefault();
+                    var $row = $(this).closest('tr');
+                    var name = $row.find('td.name').text();
+                    var iban = $row.find('td.iban').text();
+
+                    chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
+                        var activeTab = tabs[0];
+
+                        chrome.scripting.executeScript({
+                            target: {tabId: activeTab.id, allFrames: true},
+                            func: prefillSepaComponent,
+                            args: [name, iban]
+                        });
+                    });
+                });
+
+                $('#sepaTables').on('click', '.copy-button', function (evt) {
+                    evt.preventDefault();
+                    var $row = $(this).closest('tr');
+                    var iban = $row.find('td.iban').text();
+                    copyToClipboard(iban);
+                });
+            } else {
+                console.error('No data found or data is not in the expected format.');
+            }
+        })
+        .fail(function (jqXHR, textStatus, errorThrown) {
+            console.error('Failed to load JSON file:', textStatus, errorThrown);
+        });
+
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).catch(function (err) {
+            console.error('Could not copy text: ', err);
+        });
     }
-    for (let i = 0; i < visa_3ds1_rows_count + 1; i++) {
-        $('#visa-3ds1 > tbody > tr:nth-child(' + i + ') > td:nth-child(1)').addClass("visa-card-3ds1-" + i);
-        var element = $('<input type="button"  id="visa3ds1-copy-'  + i + '" value="&#xf0c5" class="copy-button"/>').on('click', function () {
-            copyToClipboard("visa-card-3ds1-" + i)
-        });
-        $('#visa-3ds1 > tbody > tr:nth-child(' + i + ') > td:nth-child(2)').append(element);
+
+    function prefillCardComponent(cardNumber, expiryDate, securityCode) {
+        var cardnumber = document.querySelector('input[id^="adyen-checkout-encryptedCardNumber-"]');
+        var cvc = document.querySelector('input[id^="adyen-checkout-encryptedSecurityCode-"]');
+        var expiry = document.querySelector('input[id^="adyen-checkout-encryptedExpiryDate-"]');
+
+        if (cardnumber != null) {
+            cardnumber.focus({focusVisible: true});
+            document.execCommand('selectAll', false, null);
+            document.execCommand('insertText', false, cardNumber);
+        }
+
+        if (cvc != null) {
+            cvc.focus({focusVisible: true});
+            document.execCommand('selectAll', false, null);
+            document.execCommand('insertText', false, securityCode);
+        }
+
+        if (expiry != null) {
+            expiry.focus({focusVisible: true});
+            document.execCommand('selectAll', false, null);
+            document.execCommand('insertText', false, expiryDate);
+        }
     }
 
-    for (let i = 0; i < visa_3ds2_rows_count + 1; i++) {
-        $('#visa-3ds2 > tbody > tr:nth-child(' + i + ') > td:nth-child(1)').addClass("visa-card-3ds2-" + i);
-        var element = $('<input type="button"  id="visa3ds2-copy-'  + i + '" value="&#xf0c5" class="copy-button"/>').on('click', function () {
-            copyToClipboard("visa-card-3ds2-" + i)
-        });
-        $('#visa-3ds2 > tbody > tr:nth-child(' + i + ') > td:nth-child(2)').append(element);
-    }
+    function prefillSepaComponent(name, iban) {
+        var form = document.querySelector('.payment-additions');
 
-    for (let i = 0; i < mastercard_rows_count + 1; i++) {
-        $('#mastercard > tbody > tr:nth-child(' + i + ') > td:nth-child(1)').addClass("mastercard-" + i);
-        var element = $('<input type="button"  id="mastercard-copy-'  + i + '" value="&#xf0c5" class="copy-button"/>').on('click', function () {
-            copyToClipboard("mastercard-" + i)
-        });
-        $('#mastercard > tbody > tr:nth-child(' + i + ') > td:nth-child(2)').append(element);
-    }
+        if (form != null) {
+            var nameField = form.querySelector('input[name^="holder"]');
+            var ibanField = form.querySelector('input[name^="iban"]');
 
-    for (let i = 0; i < mastercard_3ds1_rows_count + 1; i++) {
-        $('#mastercard-3ds1 > tbody > tr:nth-child(' + i + ') > td:nth-child(1)').addClass("mastercard-3ds1-" + i);
-        var element = $('<input type="button"  id="mastercard3ds1-copy-'  + i + '" value="&#xf0c5" class="copy-button"/>').on('click', function () {
-            copyToClipboard("mastercard-3ds1-" + i)
-        });
-        $('#mastercard-3ds1 > tbody > tr:nth-child(' + i + ') > td:nth-child(2)').append(element);
-    }
+            if (nameField != null) {
+                nameField.focus({focusVisible: true});
+                document.execCommand('selectAll', false, null);
+                document.execCommand('insertText', false, name);
+            }
 
-    for (let i = 0; i < amex_rows_count + 1; i++) {
-        $('#amex > tbody > tr:nth-child(' + i + ') > td:nth-child(1)').addClass("amex-card-" + i);
-        var element = $('<input type="button" id="amex-copy-' + i + '" value="&#xf0c5" class="copy-button"/>').on('click', function () {
-            copyToClipboard("amex-card-" + i)
-        });
-        $('#amex > tbody > tr:nth-child(' + i + ') > td:nth-child(2)').append(element);
-    }
-
-    for (let i = 0; i < amex_3ds1_rows_count + 1; i++) {
-        $('#amex-3ds1 > tbody > tr:nth-child(' + i + ') > td:nth-child(1)').addClass("amex-3ds1-" + i);
-        var element = $('<input type="button"  id="amex3ds1-copy-'  + i + '" value="&#xf0c5" class="copy-button"/>').on('click', function () {
-            copyToClipboard("amex-3ds1-" + i)
-        });
-        $('#amex-3ds1 > tbody > tr:nth-child(' + i + ') > td:nth-child(2)').append(element);
-    }
-
-    for (let i = 0; i < amex_3ds2_rows_count + 1; i++) {
-        $('#amex-3ds2 > tbody > tr:nth-child(' + i + ') > td:nth-child(1)').addClass("amex-3ds2-" + i);
-        var element = $('<input type="button"  id="amex3ds2-copy-'  + i + '" value="&#xf0c5" class="copy-button"/>').on('click', function () {
-            copyToClipboard("amex-3ds2-" + i)
-        });
-        $('#amex-3ds2 > tbody > tr:nth-child(' + i + ') > td:nth-child(2)').append(element);
-    }
-
-    for (let i = 0; i < maestro_rows_count + 1; i++) {
-        $('#maestro > tbody > tr:nth-child(' + i + ') > td:nth-child(1)').addClass("maestro-card-" + i);
-        var element = $('<input type="button" id="maestrocard-copy-' + i + '" value="&#xf0c5" class="copy-button"/>').on('click', function () {
-            copyToClipboard("maestro-card-" + i)
-        });
-        $('#maestro > tbody > tr:nth-child(' + i + ') > td:nth-child(2)').append(element);
-
-    }
-
-    for (let i = 0; i < maestro_3ds1_rows_count + 1; i++) {
-        $('#maestro-3ds1 > tbody > tr:nth-child(' + i + ') > td:nth-child(1)').addClass("maestro-3ds1-" + i);
-        var element = $('<input type="button"  id="maestro3ds1-copy-'  + i + '" value="&#xf0c5" class="copy-button"/>').on('click', function () {
-            copyToClipboard("maestro-3ds1-" + i)
-        });
-        $('#maestro-3ds1 > tbody > tr:nth-child(' + i + ') > td:nth-child(2)').append(element);
-    }
-
-    for (let i = 0; i < maestro_3ds2_rows_count + 1; i++) {
-        $('#maestro-3ds2 > tbody > tr:nth-child(' + i + ') > td:nth-child(1)').addClass("maestro-3ds2-" + i);
-        var element = $('<input type="button"  id="maestro3ds2-copy-'  + i + '" value="&#xf0c5" class="copy-button"/>').on('click', function () {
-            copyToClipboard("maestro-3ds2-" + i)
-        });
-        $('#maestro-3ds2 > tbody > tr:nth-child(' + i + ') > td:nth-child(2)').append(element);
-    }
-
-    for (let i = 0; i < adyen_sepa_rows_count + 1; i++) {
-        $('#adyen-sepa > tbody > tr:nth-child(' + i + ') > td:nth-child(1)').addClass("adyen-sepa-name" + i)
-        $('#adyen-sepa > tbody > tr:nth-child(' + i + ') > td:nth-child(3)').addClass("adyen-sepa-iban" + i)
-        var element = $('<input type="button" id="adyen-sepa-name' + i + '" value="&#xf0c5" class="copy-button"/>').on('click', function () {
-            copyToClipboard("adyen-sepa-name" + i)
-        });
-        var element1 = $('<input type="button" id="adyen-sepa-iban' + i + '" value="&#xf0c5" class="copy-button"/>').on('click', function () {
-            copyToClipboard("adyen-sepa-iban" + i)
-        });
-        $('#adyen-sepa > tbody > tr:nth-child(' + i + ') > td:nth-child(2)').append(element);
-        $('#adyen-sepa > tbody > tr:nth-child(' + i + ') > td:nth-child(4)').append(element1);
+            if (ibanField != null) {
+                ibanField.focus({focusVisible: true});
+                document.execCommand('selectAll', false, null);
+                document.execCommand('insertText', false, iban);
+            }
+        }
     }
 });
-
