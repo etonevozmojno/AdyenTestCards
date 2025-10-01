@@ -1,0 +1,27 @@
+[
+  {
+    "account_name": "A. Klaassen",
+    "iban": "NL13TEST0123456789",
+    "country": "NL"
+  },
+  {
+    "account_name": "B. Klaassen",
+    "iban": "NL36TEST0236169114",
+    "country": "NL"
+  },
+  {
+    "account_name": "A. Schneider",
+    "iban": "DE87123456781234567890",
+    "country": "DE"
+  },
+  {
+    "account_name": "A. Pacini",
+    "iban": "IT60X0542811101000000123456",
+    "country": "IT"
+  },
+  {
+    "account_name": "A. Grand",
+    "iban": "FR1420041010050500013M02606",
+    "country": "FR"
+  }
+]
