@@ -1,0 +1,166 @@
+[
+  {
+    "type": "VISA (No 3DS)",
+    "cards": [
+      {
+        "card_number": "2222 4000 7000 0005",
+        "expiry_date": "03/30",
+        "security_code": "737",
+        "country": "CA"
+      },
+      {
+        "card_number": "5577 0000 5577 0004",
+        "expiry_date": "03/30",
+        "security_code": "737",
+        "country": "PL"
+      },
+      {
+        "card_number": "2222 4107 4036 0010",
+        "expiry_date": "03/30",
+        "security_code": "737",
+        "country": "NL"
+      },
+      {
+        "card_number": "2222 4107 0000 0002",
+        "expiry_date": "03/30",
+        "security_code": "737",
+        "country": "NL"
+      },
+      {
+        "card_number": "2222 4000 1000 0008",
+        "expiry_date": "03/30",
+        "security_code": "737",
+        "country": "CA"
+      }
+    ]
+  },
+  {
+    "type": "VISA (3DS v1)",
+    "cards": [
+      {
+        "card_number": "4212 3456 7890 1237",
+        "expiry_date": "03/30",
+        "security_code": "737",
+        "country": "CA"
+      }
+    ]
+  },
+  {
+    "type": "VISA (3DS v2)",
+    "cards": [
+      {
+        "card_number": "4917 6100 0000 0000",
+        "expiry_date": "03/30",
+        "security_code": "737",
+        "country": "-"
+      }
+    ]
+  },
+  {
+    "type": "MASTERCARD (No 3DS)",
+    "cards": [
+      {
+        "card_number": "2222 4000 7000 0005",
+        "expiry_date": "03/30",
+        "security_code": "737",
+        "country": "CA"
+      },
+      {
+        "card_number": "5577 0000 5577 0004",
+        "expiry_date": "03/30",
+        "security_code": "737",
+        "country": "PL"
+      },
+      {
+        "card_number": "2222 4107 4036 0010",
+        "expiry_date": "03/30",
+        "security_code": "737",
+        "country": "NL"
+      },
+      {
+        "card_number": "2222 4107 0000 0002",
+        "expiry_date": "03/30",
+        "security_code": "737",
+        "country": "NL"
+      },
+      {
+        "card_number": "2222 4000 3000 0004",
+        "expiry_date": "03/30",
+        "security_code": "737",
+        "country": "CA"
+      }
+    ]
+  },
+  {
+    "type": "MASTERCARD (3DS v1)",
+    "cards": [
+      {
+        "card_number": "5212 3456 7890 1234",
+        "expiry_date": "03/30",
+        "security_code": "737",
+        "country": "JP"
+      }
+    ]
+  },
+  {
+    "type": "AMEX (No 3DS)",
+    "cards": [
+      {
+        "card_number": "3700 0000 0000 002",
+        "expiry_date": "03/30",
+        "security_code": "7373",
+        "country": "NL"
+      },
+      {
+        "card_number": "3700 0000 0100 018",
+        "expiry_date": "03/30",
+        "security_code": "7373",
+        "country": "NL"
+      }
+    ]
+  },
+  {
+    "type": "AMEX (3DS v1)",
+    "cards": [
+      {
+        "card_number": "3714 4963 5398 431",
+        "expiry_date": "03/30",
+        "security_code": "7373",
+        "country": "NL"
+      }
+    ]
+  },
+  {
+    "type": "MAESTRO (No 3DS)",
+    "cards": [
+      {
+        "card_number": "6771 7980 2100 0008",
+        "expiry_date": "03/30",
+        "security_code": "737",
+        "country": "US"
+      }
+    ]
+  },
+  {
+    "type": "MAESTRO (3DS v1)",
+    "cards": [
+      {
+        "card_number": "6771 8309 9999 1239",
+        "expiry_date": "03/30",
+        "security_code": "737",
+        "country": "GB"
+      }
+    ]
+  },
+  {
+    "type": "MAESTRO (3DS v2)",
+    "cards": [
+      {
+        "card_number": "5000 5500 0000 0029",
+        "expiry_date": "03/30",
+        "security_code": "737",
+        "country": "-"
+      }
+    ]
+  }
+]
