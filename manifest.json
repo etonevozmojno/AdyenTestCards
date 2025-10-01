@@ -11,8 +11,12 @@
     "default_popup": "cards_list.html",
     "default_title": "Adyen Test Cards"
   },
-  "permissions": [
-    "activeTab",
-    "storage"
+  "permissions": ["scripting", "activeTab", "storage"],
+  "host_permissions": ["https://*/*", "http://*/*"],
+  "web_accessible_resources": [
+    {
+      "resources": [ "*.json" ],
+      "matches": [ "https://*/*", "http://*/*" ]
+    }
   ]
 }
